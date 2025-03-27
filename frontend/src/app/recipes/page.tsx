@@ -22,7 +22,7 @@ export default function RecipesPage() {
         {
           params: {
             number: 6,
-            apiKey: process.env.NEXT_PUBLIC_RECIPE_API_KEY,
+            apiKey: process.env.RECIPE_API_KEY,
           },
         }
       );
