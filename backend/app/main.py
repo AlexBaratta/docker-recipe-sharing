@@ -4,12 +4,18 @@ from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Field, Session, SQLModel, create_engine, select
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    database_url: str
+
+    model_config = SettingsConfigDict(env_file=".env")
 
 app = FastAPI()
 
 # Needed to prevent a CORS error when using the frontend
 origins = [
-    "http://localhost:80",
+    "http://localhost:8000",
     "http://localhost:3000",
 ]
 
@@ -36,7 +42,7 @@ class Recipe(SQLModel, table=True):
     summary: str = Field(index=True)
     
 
-postgres_url = "postgresql://localhost:5432"
+postgres_url = Settings().database_url
 
 engine = create_engine(postgres_url)
 

@@ -2,3 +2,5 @@ fastapi[standard]>=0.115.12
 pydantic>=2.7.0,<3.0.0
 sqlalchemy>=2.0.0,<3.0.0
 sqlmodel>=0.0.24
+pydantic_settings>=2.8.1
+psycopg2>=2.9.10
