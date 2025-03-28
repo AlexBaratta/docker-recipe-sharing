@@ -1,17 +1,23 @@
 
-FROM python:3.9
+FROM python:3.11
 
 
-WORKDIR /code
+WORKDIR /app
+
+# Copy files and install dependencies
+ 
+
+COPY requirements.txt .
+ 
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the app
+ 
+COPY . .
+
+# Expose FastAPI's default port
+EXPOSE 8000
 
 
-COPY ./requirements.txt /code/requirements.txt
-
-
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-
-
-COPY ./app /code/app
-
-
-CMD ["fastapi", "run", "app/main.py", "--port", "80"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

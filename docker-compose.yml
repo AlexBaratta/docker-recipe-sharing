@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   frontend:
     build: ./frontend
@@ -5,24 +7,25 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-    env_file:
-      - ./config/backend.env
+    #env_file:
+     # - ./config/backend.env
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: ["npm", "start"]
+      - ./frontend:/src
+      - /node_modules
+    #command: ["npm", "start"]
 
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - ./config/backend.env
     volumes:
       - ./backend:/app
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    #command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
   db:
     image: postgres:15
@@ -32,6 +35,11 @@ services:
       - ./config/db.env
     volumes:
       - ./data/postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d mydatabase"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   postgres-data:

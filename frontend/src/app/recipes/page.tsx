@@ -18,7 +18,7 @@ export default function RecipesPage() {
     setLoading(true);
     try {
       //TODO: fetch from backend instead of this. scrape this stuff into db
-      const res = await axios.get(
+      /*const res = await axios.get(
         "https://api.spoonacular.com/recipes/random",
         {
           params: {
@@ -26,7 +26,31 @@ export default function RecipesPage() {
             apiKey: process.env.RECIPE_API_KEY,
           },
         }
-      );
+      );*/
+      const res = {
+        data: {
+          recipes: [
+            {
+              id: 1,
+              title: "Spaghetti Carbonara",
+              image:
+                "https://example.com/spaghetti-carbonara.jpg",
+              summary:
+                "<p>Spaghetti Carbonara is a classic Italian pasta dish made with eggs, cheese, pancetta, and pepper.</p>",
+            },
+            {
+              id: 2,
+              title: "Chicken Curry",
+              image:
+                "https://example.com/chicken-curry.jpg",
+              summary:
+                "<p>Chicken Curry is a flavorful dish made with chicken, spices, and coconut milk.</p>",
+            },
+          ],
+        },
+      }
+      const test = await axios.get("http://localhost:80/");
+      console.log(test.data);
       setRecipes(res.data.recipes);
     } catch (err) {
       console.error("Error fetching recipes:", err);
