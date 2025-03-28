@@ -17,6 +17,7 @@ export default function RecipesPage() {
   const fetchRecipes = async () => {
     setLoading(true);
     try {
+      //TODO: fetch from backend instead of this. scrape this stuff into db
       const res = await axios.get(
         "https://api.spoonacular.com/recipes/random",
         {
