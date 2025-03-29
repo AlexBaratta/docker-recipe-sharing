@@ -2,56 +2,18 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-type Recipe = {
-  id: number;
-  title: string;
-  image: string;
-  summary: string;
-};
+import RecipeModal, { Recipe } from "../components/RecipeModal";
 
 export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   const fetchRecipes = async () => {
     setLoading(true);
     try {
-      //TODO: fetch from backend instead of this. scrape this stuff into db
-      /*const res = await axios.get(
-        "https://api.spoonacular.com/recipes/random",
-        {
-          params: {
-            number: 6,
-            apiKey: process.env.RECIPE_API_KEY,
-          },
-        }
-      );*/
-      const res = {
-        data: {
-          recipes: [
-            {
-              id: 1,
-              title: "Spaghetti Carbonara",
-              image:
-                "https://example.com/spaghetti-carbonara.jpg",
-              summary:
-                "<p>Spaghetti Carbonara is a classic Italian pasta dish made with eggs, cheese, pancetta, and pepper.</p>",
-            },
-            {
-              id: 2,
-              title: "Chicken Curry",
-              image:
-                "https://example.com/chicken-curry.jpg",
-              summary:
-                "<p>Chicken Curry is a flavorful dish made with chicken, spices, and coconut milk.</p>",
-            },
-          ],
-        },
-      }
-      const test = await axios.get("http://localhost:80/");
-      console.log(test.data);
-      setRecipes(res.data.recipes);
+      const res = await axios.get("http://localhost:8000/get-recipes/");
+      setRecipes(res.data);
     } catch (err) {
       console.error("Error fetching recipes:", err);
     } finally {
@@ -78,13 +40,15 @@ export default function RecipesPage() {
           {recipes.map((recipe) => (
             <div
               key={recipe.id}
-              className="bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-md hover:shadow-lg transition p-4"
+              className="bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-md hover:shadow-lg transition p-4 cursor-pointer"
+              onClick={() => setSelectedRecipe(recipe)}
             >
               <img
                 src={recipe.image}
                 alt={recipe.title}
                 className="rounded-xl w-full h-48 object-cover mb-4"
               />
+
               <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
                 {recipe.title}
               </h2>
@@ -95,6 +59,13 @@ export default function RecipesPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {selectedRecipe && (
+        <RecipeModal
+          recipe={selectedRecipe}
+          onClose={() => setSelectedRecipe(null)}
+        />
       )}
     </div>
   );

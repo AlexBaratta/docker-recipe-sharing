@@ -13,7 +13,7 @@ export default function Home() {
         />
 
         <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 dark:text-white">
-          Welcome to Recipe Sharing Thing
+          Welcome to Recipe Sharing
         </h1>
 
         <p className="text-lg sm:text-xl max-w-xl text-gray-600 dark:text-gray-300">
