@@ -1,33 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import axios from "axios";
+import Image from "next/image";
+import { Recipe } from "../components/RecipeModal";
 
 export default function SubmitRecipePage() {
   const [title, setTitle] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [createdRecipe, setCreatedRecipe] = useState<Recipe | null>(null);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    //TODO: make the thing work
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({
+
+    const newRecipe = {
       title,
-      imageFile,
+      image: imageUrl,
       ingredients,
       instructions,
-    });
+      summary: `<p>Ingredients: ${ingredients}</p><p>Instructions: ${instructions}</p>`,
+    };
 
-    alert("GIMME AN ENDPOINT");
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/add-recipe/",
+        newRecipe
+      );
+      console.log("Recipe added successfully:", response.data);
+      setCreatedRecipe(response.data);
+    } catch (err) {
+      console.error("Error adding recipe:", err);
+    }
   };
 
   return (
@@ -57,20 +62,26 @@ export default function SubmitRecipePage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Upload Image
+              Image URL
             </label>
             <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full text-gray-800 dark:text-white"
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              required
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#111] text-gray-800 dark:text-white"
+              placeholder="https://example.com/image.jpg"
             />
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="mt-4 rounded-lg max-h-60 object-contain border border-gray-300 dark:border-gray-700"
-              />
+            {imageUrl && (
+              <div className="mt-4 relative h-60 w-full border border-gray-300 dark:border-gray-700 rounded-lg">
+                <Image
+                  src={imageUrl}
+                  alt="Preview"
+                  fill
+                  style={{ objectFit: "contain" }}
+                  className="rounded-lg"
+                />
+              </div>
             )}
           </div>
 
@@ -83,7 +94,7 @@ export default function SubmitRecipePage() {
               onChange={(e) => setIngredients(e.target.value)}
               required
               className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#111] text-gray-800 dark:text-white h-32 resize-none"
-              placeholder="List ingredients separated by commas or lines"
+              placeholder="List ingredients separated by commas or newlines"
             />
           </div>
 
@@ -107,6 +118,14 @@ export default function SubmitRecipePage() {
             Submit Recipe
           </button>
         </form>
+
+        {createdRecipe && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+              Recipe Created!
+            </h2>
+          </div>
+        )}
       </div>
     </div>
   );
